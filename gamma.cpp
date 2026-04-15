@@ -29,12 +29,15 @@ int main(int argc, char *argv[])
         start += remainder;
         end += remainder;
     }
+    std::cout << "Proces " << world_rank << " oblicza od " << start << " do " << end - 1 << std::endl;
     double part_sum = 0;
     for (int i = start; i < end; i++) {
         part_sum += 1.0 / (i + 1);
     }
     double sum = 0;
     MPI_Reduce(&part_sum, &sum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    MPI_Barrier(MPI_COMM_WORLD); // czeka na wszystkie procesy
 
     if (world_rank == 0) { // tylko "serwer" oblicza wynik i go wyswietla
         double result = sum - log(n);
